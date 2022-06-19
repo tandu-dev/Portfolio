@@ -76,4 +76,24 @@ public class Tests
         Assert.IsNotNull(category);
         Assert.IsTrue(category.Count == 3);
     }
+    [Test]
+    public async Task TestInsert()
+    {
+        var post = new Post() {Id=3, Title="Test Post 3", 
+            Contents = "<p>This is a blog post</p>",
+            Timestamp=DateTime.Now,
+            CategoryId = 3
+        };
+        
+        var client = _application.CreateClient();
+        var result = await client.PostAsJsonAsync<Post>("/posts", post);
+
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.IsSuccessStatusCode);
+        var returnPostStream = await result.Content.ReadAsStreamAsync();
+        var returnPost = await System.Text.Json.JsonSerializer.DeserializeAsync<Post>(returnPostStream);
+        Assert.IsNotNull(returnPost);
+        Assert.AreSame(returnPost, post);
+        //Assert.IsTrue(returnPost.CategoryId == 3);
+    }
 }
