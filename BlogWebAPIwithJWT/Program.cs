@@ -2,7 +2,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Http;
 using BlogWithJWT;
 
-
+//testing minimal api
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BlogDb>(options => 
     options.UseSqlite("Data Source=JWTBlog.db"));
