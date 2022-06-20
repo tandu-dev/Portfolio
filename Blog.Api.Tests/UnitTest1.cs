@@ -91,9 +91,16 @@ public class Tests
         Assert.IsNotNull(result);
         Assert.IsTrue(result.IsSuccessStatusCode);
         var returnPostStream = await result.Content.ReadAsStreamAsync();
-        var returnPost = await System.Text.Json.JsonSerializer.DeserializeAsync<Post>(returnPostStream);
+        var returnPostString = await result.Content.ReadAsStringAsync();
+        JsonSerializerOptions jso = new JsonSerializerOptions() {
+            Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        };
+        var expectedPostString = System.Text.Json.JsonSerializer.Serialize<Post>(post,jso );
+        var returnPost = await  System.Text.Json.JsonSerializer.DeserializeAsync<Post>(returnPostStream);
         Assert.IsNotNull(returnPost);
-        Assert.AreSame(returnPost, post);
+        Assert.AreEqual(expectedPostString, returnPostString);
+        
         //Assert.IsTrue(returnPost.CategoryId == 3);
     }
 }
