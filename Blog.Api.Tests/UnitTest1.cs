@@ -99,7 +99,7 @@ public class Tests
         var expectedPostString = System.Text.Json.JsonSerializer.Serialize<Post>(post,jso );
         var returnPost = await  System.Text.Json.JsonSerializer.DeserializeAsync<Post>(returnPostStream);
         Assert.IsNotNull(returnPost);
-        Assert.AreEqual(expectedPostString, returnPostString);
+        Assert.That(expectedPostString, Is.EqualTo(returnPostString));
         
         //Assert.IsTrue(returnPost.CategoryId == 3);
     }
@@ -113,11 +113,11 @@ public class Tests
             var dirtyPost = post;
             dirtyPost.Contents = "<p>This Blog Post Has Been Changed</p>";
             dirtyPost.Timestamp = DateTime.Now;
-            var result = client.PutAsJsonAsync<Post>("", dirtyPost);
-            var resultPost = result.Result.Content.ReadFromJsonAsync<Post>();
+            var result = client.PutAsJsonAsync<Post>("/posts/1", dirtyPost);
+            var resultPost = await result.Result.Content.ReadFromJsonAsync<Post>();
 
-            Assert.AreNotSame(post, resultPost);
-            Assert.AreSame(dirtyPost, resultPost);
+            AssertExtensions.AreNotEqualByJson(post, resultPost);
+            AssertExtensions.AreEqualByJson(dirtyPost, resultPost);
         }
         else
         {
