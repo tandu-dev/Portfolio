@@ -103,4 +103,26 @@ public class Tests
         
         //Assert.IsTrue(returnPost.CategoryId == 3);
     }
+      [Test]
+    public async Task TestUpdate()
+    {
+        var client = _application.CreateClient();
+        var post = await client.GetFromJsonAsync<Post>("/posts/1");
+        if (post != null)
+        {
+            var dirtyPost = post;
+            dirtyPost.Contents = "<p>This Blog Post Has Been Changed</p>";
+            dirtyPost.Timestamp = DateTime.Now;
+            var result = client.PutAsJsonAsync<Post>("", dirtyPost);
+            var resultPost = result.Result.Content.ReadFromJsonAsync<Post>();
+
+            Assert.AreNotSame(post, resultPost);
+            Assert.AreSame(dirtyPost, resultPost);
+        }
+        else
+        {
+            Assert.IsNotNull(post);
+        }
+
+    }
 }
