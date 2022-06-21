@@ -123,6 +123,17 @@ public class Tests
         {
             Assert.IsNotNull(post);
         }
+    }
+    [Test]
+    public async Task TestDelete()
+    {
+        var client = _application.CreateClient();
+        var result = await client.DeleteAsync("/posts/1");
 
+        Assert.That(HttpStatusCode.OK, Is.EqualTo(result.StatusCode));
+
+        var post = await client.GetAsync("/posts/1");
+
+        Assert.That(HttpStatusCode.NotFound, Is.EqualTo(post.StatusCode));
     }
 }
