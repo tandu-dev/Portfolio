@@ -7,7 +7,8 @@ namespace Blog.Api.Tests;
 public class Tests
 {
     private BlogApiApplication _application;
-    
+    private string jwtToken;
+
     [SetUp]
     public void Setup()
     {
@@ -33,6 +34,14 @@ public class Tests
                 });
                 blogDbContext.SaveChangesAsync();
             }
+            //get token
+            var client = _application.CreateClient();
+            var user = new UserModel() { UserName = "admin", Password="abc123"};
+            var task = Task.Run(async () => 
+                                    await client.PostAsJsonAsync("/login", user)
+                                    .Result.Content
+                                    .ReadAsStringAsync());
+            var jwtToken = task.
         }
 
     }

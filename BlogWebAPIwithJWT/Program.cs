@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using BlogWithJWT;
 
+#region builder
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BlogDb>(options => 
@@ -53,6 +54,9 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
         };
 });
+#endregion
+
+#region app
 var app = builder.Build();
 app.UseAuthentication();
 app.UseAuthorization();
@@ -62,10 +66,10 @@ if(app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+#endregion
 
 
-
-app.MapPost("/login",   [AllowAnonymous] async (
+app.MapPost("/login", [AllowAnonymous] async (
     [FromBody] UserModel userModel,  TokenService tokenService, 
     IUserRepositoryService userRepositoryService, HttpResponse response) => {
     var userDto = userRepositoryService.GetUser(userModel);
@@ -91,18 +95,18 @@ app.MapGet("/AuthorizedResource", (Func<string>)(
 app.MapGet("/", () => "Hello World!");
 
 app.MapGet("/posts", async (BlogDb db) =>
-    await db.Posts.ToListAsync());
+    await db.Posts.ToListAsync()).WithTags("Blog");
 
 app.MapGet("/categories", async (BlogDb db) =>  
-        await db.Categories.ToListAsync());
+        await db.Categories.ToListAsync()).WithTags("Blog");
 
 app.MapGet("/posts/{id}", async (int id, BlogDb db) =>
     await db.Posts.FindAsync(id)
         is Post post
             ? Results.Ok(post)
-            : Results.NotFound("record"));
+            : Results.NotFound("record")).WithTags("Blog");
 
-app.MapPost("/posts", async (Post post, BlogDb db) =>
+app.MapPost("/posts", [Authorize] async (Post post, BlogDb db) =>
 {
     if(post.CategoryId == 0 || post.CategoryId > 3 ||
     String.IsNullOrWhiteSpace(post.Title) ||
@@ -112,9 +116,9 @@ app.MapPost("/posts", async (Post post, BlogDb db) =>
     await db.SaveChangesAsync();
 
     return Results.Created($"/posts/{post.Id}", post);
-});
+}).WithTags("Blog").RequireAuthorization();
 
-app.MapPut("/posts/{id}", async (int id, Post inputPost, BlogDb db) =>
+app.MapPut("/posts/{id}", [Authorize] async (int id, Post inputPost, BlogDb db) =>
 {
     var post = await db.Posts.FindAsync(id);
 
@@ -128,9 +132,9 @@ app.MapPut("/posts/{id}", async (int id, Post inputPost, BlogDb db) =>
     await db.SaveChangesAsync();
 
     return Results.Created($"/posts/{post.Id}", post);
-});
+}).WithTags("Blog").RequireAuthorization();
 
-app.MapDelete("/posts/{id}", async (int id, BlogDb db) =>
+app.MapDelete("/posts/{id}", [Authorize] async (int id, BlogDb db) =>
 {
     if (await db.Posts.FindAsync(id) is Post post)
     {
@@ -140,7 +144,7 @@ app.MapDelete("/posts/{id}", async (int id, BlogDb db) =>
     }
 
     return Results.NotFound();
-});
+}).WithTags("Blog").RequireAuthorization();
 
 using (var scope = app.Services.CreateScope())
 {
