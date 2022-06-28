@@ -6,13 +6,13 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using BlogWithJWT;
+using BlogWithJWT.DataSeed;
 
 #region builder
 
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<BlogDb>(options => 
     options.UseSqlite("Data Source=JWTBlog.db"));
-
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
@@ -94,8 +94,20 @@ app.MapGet("/AuthorizedResource", (Func<string>)(
 
 app.MapGet("/", () => "Hello World!");
 
-app.MapGet("/posts", async (BlogDb db) =>
-    await db.Posts.ToListAsync()).WithTags("Blog");
+app.MapGet("/posts", async (BlogDb db) => 
+        await db.Posts.ToListAsync()
+    ).WithTags("Blog");
+
+app.MapGet("/posts/{pageNumber}/{pageSize}", async (int pageNumber, int pageSize, BlogDb db) =>
+    {
+        var pg = new PageParameters() {PageNumber = pageNumber, 
+                PageSize = pageSize};
+        return await db.Posts.OrderByDescending(s => s.Id)
+            .Skip((pg.PageNumber -1)*pg.PageSize)
+            .Take(pg.PageSize)
+            .ToListAsync();
+    }
+).WithTags("Blog");
 
 app.MapGet("/categories", async (BlogDb db) =>  
         await db.Categories.ToListAsync()).WithTags("Blog");
@@ -150,7 +162,7 @@ using (var scope = app.Services.CreateScope())
 {
     var dataContext = scope.ServiceProvider.GetRequiredService<BlogDb>();
     if(dataContext.Database.IsSqlite())
-        dataContext.Database.Migrate();
+        dataContext.Database.Migrate();    
 }
 
 app.Run();

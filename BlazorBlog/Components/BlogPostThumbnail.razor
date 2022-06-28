@@ -1,6 +1,18 @@
 using BlazorBlog.Data.Model;
 
+<h1>@post.Title</h1>
+<span>@post.Timestamp</span>
+<p>@post.Contents.SubString(0,100)</p>
+<hr />
+
 @code{
-    [Parameter]
     public Post post {get; set;}
+
+    [Parameter]
+    public int postId;
+
+    protected override async Task OnInitializedAsync()
+    {
+        post = await ApiService.getPost(postId);
+    }
 }

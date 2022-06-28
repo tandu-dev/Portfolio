@@ -1,12 +1,16 @@
 ﻿@page "/"
+@using BlazorBlog.Components;
 
 <PageTitle>Blog Posts</PageTitle>
 
-<BlogPostThumbnail />
-<BlogPostThumbnail />
-<BlogPostThumbnail />
-<BlogPostThumbnail />
-<BlogPostThumbnail />
+@for(var i = 1; i <= numberOfPosts ; i++;)
+{
+    <BlogPostThumbnail />
+}
 
 <PreviousEntries /> 
 <NextEntries />
+@code {
+    var numberOfPosts = 3;
+
+}
