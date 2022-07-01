@@ -1,4 +1,5 @@
-using BlazorBlog.Data.Model;
+@using BlazorBlog.Data.Model;
+@inject BlazorBlog.Data.Services.ApiService;
 
 <h1>@post.Title</h1>
 <span>@post.Timestamp</span>
@@ -9,8 +10,11 @@ using BlazorBlog.Data.Model;
     public Post post {get; set;}
 
     [Parameter]
-    public int postId;
+    public int PageNumber;
 
+    [Parameter]
+    public int PageSize;
+    
     protected override async Task OnInitializedAsync()
     {
         post = await ApiService.getPost(postId);
