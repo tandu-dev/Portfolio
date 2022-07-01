@@ -6,7 +6,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using BlogWithJWT;
-using BlogWithJWT.DataSeed;
 
 #region builder
 
@@ -148,6 +147,13 @@ app.MapPut("/posts/{id}", [Authorize] async (int id, Post inputPost, BlogDb db) 
 
 app.MapDelete("/posts/{id}", [Authorize] async (int id, BlogDb db) =>
 {
+    
+    if (id == -1)
+    {
+        db.Posts.RemoveRange(db.Posts);
+        await db.SaveChangesAsync();
+        return Results.Ok();
+    }
     if (await db.Posts.FindAsync(id) is Post post)
     {
         db.Posts.Remove(post);
