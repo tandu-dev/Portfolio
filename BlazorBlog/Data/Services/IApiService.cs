@@ -1,3 +1,4 @@
+using BlazorBlog.Data.Model;
 namespace BlazorBlog.Data.Services{
     public interface IApiService
     {

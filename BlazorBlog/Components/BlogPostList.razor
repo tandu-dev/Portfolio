@@ -1,0 +1,27 @@
+@using BlazorBlog.Data.Model;
+@using BlazorBlog.Data.Services;
+
+@inject IApiService apiService;
+
+@foreach(Post post in posts)
+{
+    <h1>@post.Title</h1>
+    <p>@post.Contents.Substring(1,40)</p>
+    <p>@post.Timestamp</p>
+    <hr/>
+}
+
+
+@code{
+    [Parameter]
+    public int PageNumber {get; set;} = 1;
+
+    [Parameter]
+    public int PageSize {get; set;} = 3;
+    public IEnumerable<Post> posts = Array.Empty<Post>();
+    protected override async Task OnInitializedAsync()
+    {
+        PageParameters pg = new BlazorBlog.Data.Model.PageParameters() {PageNumber = PageNumber, PageSize = PageSize};
+        posts = await apiService.GetPosts(pg);
+    }
+}

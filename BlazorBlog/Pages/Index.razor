@@ -3,11 +3,11 @@
 
 <PageTitle>Blog Posts</PageTitle>
 
-<BlogPostThumbnail PageNumber = @pagenumber, PageSize = @numberOfPosts />
+<BlogPostList PageNumber = "@pageNumber" PageSize = "@numberOfPosts" />
 
 
 @code {
-    var pageNumber = 1
-    var numberOfPosts = 3;
+    int pageNumber = 1;
+    int numberOfPosts = 3;
 
 }
