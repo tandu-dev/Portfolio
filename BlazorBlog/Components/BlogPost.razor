@@ -1,0 +1,23 @@
+@using BlazorBlog.Data.Model;
+
+    
+    @if(thumbnail)
+    {
+        <h1><a href=>@post.Title</a></h1>
+        <p>@post.Contents.Substring(1,40)</p>
+        <p>@post.Timestamp</p>
+        <hr/>
+    }
+    else{
+        <h1>@post.Title</h1>
+        <p>@post.Contents</p>
+        <p>@post.Timestamp</p>
+        <p>@post.CategoryId</p>
+        <hr/>
+    }
+    @code{
+        [Parameter]
+        public Post post {get; set;} = new Post();
+        [Parameter]
+        public bool thumbnail {get; set;} = false;
+    }

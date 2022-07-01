@@ -5,10 +5,7 @@
 
 @foreach(Post post in posts)
 {
-    <h1>@post.Title</h1>
-    <p>@post.Contents.Substring(1,40)</p>
-    <p>@post.Timestamp</p>
-    <hr/>
+    <BlogPost Post=@post thumbnail=true />
 }
 
 
