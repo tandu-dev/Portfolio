@@ -5,7 +5,8 @@ using System.Text;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
-using BlogWithJWT;
+using BlogWebAPIwithJWT.Data;
+using BlogWebAPIwithJWT.Services;
 
 #region builder
 
@@ -39,6 +40,7 @@ builder.Services.AddSwaggerGen(c =>
 });
 builder.Services.AddSingleton<TokenService>(new TokenService());
 builder.Services.AddSingleton<IUserRepositoryService>(new UserRepositoryService());
+builder.Services.AddScoped<IPostService, PostService>();
 builder.Services.AddAuthorization();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(opt =>
 {
@@ -93,29 +95,27 @@ app.MapGet("/AuthorizedResource", (Func<string>)(
 
 app.MapGet("/", () => "Hello World!");
 
-app.MapGet("/posts", async (BlogDb db) => 
-        await db.Posts.ToListAsync()
+app.MapGet("/posts", async (IPostService ps) => {
+        return await ps.GetPostsAsync();
+        }
     ).WithTags("Blog");
 
-app.MapGet("/posts/{pageNumber}/{pageSize}", async (int pageNumber, int pageSize, BlogDb db) =>
+app.MapGet("/posts/{pageNumber}/{pageSize}", async (int pageNumber, int pageSize, IPostService ps) =>
     {
         var pg = new PageParameters() {PageNumber = pageNumber, 
                 PageSize = pageSize};
-        return await db.Posts.OrderByDescending(s => s.Id)
-            .Skip((pg.PageNumber -1)*pg.PageSize)
-            .Take(pg.PageSize)
-            .ToListAsync();
+        return await ps.GetPostsAsync(pg);
     }
 ).WithTags("Blog");
 
 app.MapGet("/categories", async (BlogDb db) =>  
         await db.Categories.ToListAsync()).WithTags("Blog");
 
-app.MapGet("/posts/{id}", async (int id, BlogDb db) =>
-    await db.Posts.FindAsync(id)
-        is Post post
-            ? Results.Ok(post)
-            : Results.NotFound("record")).WithTags("Blog");
+app.MapGet("/posts/{id}", async (int id,  IPostService ps) =>
+    await ps.GetPostAsync(id)
+            is Post post
+                ? Results.Ok(post)
+                : Results.NotFound("record")).WithTags("Blog");
 
 app.MapPost("/posts", [Authorize] async (Post post, BlogDb db) =>
 {
@@ -172,42 +172,3 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.Run();
-
-namespace BlogWithJWT
-{
-    
-
-    public class Post
-    {
-        public int Id { get; set; }
-        public string? Title { get; set; }
-        public string? Contents { get; set; }
-        public DateTime Timestamp {get; set;}
-        public int CategoryId {get; set;}
-    }
-    public class Category {
-        public int categoryId {get; set;}
-
-        public string? CategoryName {get;set;}
-    }
-
-    public class BlogDb : DbContext
-    {
-        public BlogDb(DbContextOptions<BlogDb> options)
-            : base(options) { }
-        public DbSet<Post> Posts => Set<Post>();
-        public DbSet<Category> Categories => Set<Category>();
-        protected override void OnModelCreating(ModelBuilder modelbuilder)
-        {
-            base.OnModelCreating(modelbuilder);
-        
-            modelbuilder.Entity<Category>().HasData(
-                        new Category{categoryId = 1, CategoryName = "General"},
-                        new Category {categoryId = 2, CategoryName = "Technology"},
-                        new Category {categoryId = 3, CategoryName = "Random"}
-            );
-            
-        }
-    }
-
-}

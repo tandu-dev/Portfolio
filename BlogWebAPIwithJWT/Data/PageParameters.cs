@@ -1,4 +1,4 @@
-namespace BlogWithJWT {
+namespace BlogWebAPIwithJWT.Data{
 
 public class PageParameters
     {
