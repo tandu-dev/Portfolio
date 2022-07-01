@@ -351,3 +351,7 @@ MigrationBackup/
 .vscode/launch.json
 
 .vscode/tasks.json
+
+BlogWebAPIwithJWT/JWTBlog.db-shm
+
+BlogWebAPIwithJWT/JWTBlog.db-wal
