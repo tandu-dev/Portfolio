@@ -1,5 +1,4 @@
-namespace BlogWithJWT.DataSeed {
-
+// Root myDeserializedClass = JsonConvert.DeserializeObject<List<Root>>(myJsonResponse);
     public class LoremIpsum
     {
         public int id { get; set; }
@@ -14,4 +13,4 @@ namespace BlogWithJWT.DataSeed {
         public string question { get; set; }
         public List<string> questions { get; set; }
     }
-}
+
