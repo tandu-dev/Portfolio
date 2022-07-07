@@ -1,0 +1,20 @@
+@page "/post/{id}"
+@using BlazorBlog.Components;
+@using BlazorBlog.Data.Model;
+@using BlazorBlog.Data.Services;
+
+@inject IApiService apiService;
+
+<BlogPost thumbnail=false post=@post />
+
+@code{
+    [Parameter]
+    public string? Id {get; set; }
+
+    public Post? post {get; set;}
+
+    protected override async Task OnInitializedAsync()
+    {
+        post = await apiService.GetPostAsync(Id);
+    }
+}

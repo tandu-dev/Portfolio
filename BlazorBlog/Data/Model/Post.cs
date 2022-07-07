@@ -7,6 +7,7 @@
             public string? Contents { get; set; }
             public DateTime Timestamp {get; set;}
             public int CategoryId {get; set;}
+            public string? CategoryName {get; set;}
         }
         public class Category {
             public int categoryId {get; set;}

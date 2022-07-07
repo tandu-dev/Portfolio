@@ -3,21 +3,25 @@
     
     @if(thumbnail)
     {
-        <h1><a href=>@post.Title</a></h1>
-        <p>@post.Contents.Substring(1,40)</p>
-        <p>@post.Timestamp</p>
+        var postAddress = $"/post/{@post.Id}";
+        <h1><a href="@postAddress">@post.Title</a></h1>
+        <p>@post.Contents.Substring(1,40) <a href="@postAddress">...more</a></p>
+        <p>@post.Timestamp, Category: @post.CategoryName</p>
         <hr/>
     }
     else{
-        <h1>@post.Title</h1>
-        <p>@post.Contents</p>
-        <p>@post.Timestamp</p>
-        <p>@post.CategoryId</p>
-        <hr/>
+        @if (@post is not null) {
+            <h1>@post.Title</h1>
+            <p>@post.Contents</p>
+            <p>@post.Timestamp</p>
+            <p>@post.CategoryName</p>
+            <hr/>
+            <a href="/1/3">Back to List</a>
+        }
     }
     @code{
         [Parameter]
-        public Post post {get; set;} = new Post();
+        public Post post {get; set;}
         [Parameter]
         public bool thumbnail {get; set;} = false;
     }
