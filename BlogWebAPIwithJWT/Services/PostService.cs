@@ -23,6 +23,14 @@ namespace BlogWebAPIwithJWT.Services {
 
         public async Task<List<Post>> GetPostsAsync(PageParameters pg)
         {
+            var postCount = db.Posts.Count();
+            var numberOfPages = (double)postCount/pg.PageSize;
+            var maxPage = (int) Math.Ceiling(numberOfPages);
+            if (pg.PageNumber > maxPage)
+            {
+                pg.PageNumber = maxPage;
+            }
+            
             return await db.Posts
             .Join(db.Categories, p => p.CategoryId, c=>c.categoryId, (p, c) => new {p, c})
             .OrderByDescending(s => s.p.Id)
