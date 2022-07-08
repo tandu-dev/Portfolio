@@ -38,11 +38,12 @@ namespace BlazorBlog.Data.Services
             blogCredential = await _localStorageService.GetItem<BlogCredential>("credential");
         }
 
-        public async Task Login(BlogCredential blogCredential)
+        public async Task Login(BlogCredential paramBlogCredential)
         {
             var url = $"{_config["GetLoginAddress"]}";
-            TokenWrapper token = await _httpService.Post<TokenWrapper>(url, blogCredential);
-            blogCredential.tokenWrapper = token;
+            TokenWrapper token = await _httpService.Post<TokenWrapper>(url, paramBlogCredential);
+            paramBlogCredential.tokenWrapper = token;
+            blogCredential = paramBlogCredential;
             await _localStorageService.SetItem("credential", blogCredential); 
         }
 

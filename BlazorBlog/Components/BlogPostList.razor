@@ -20,12 +20,16 @@
     [Parameter]
     public int PageSize {get; set;}
     public IEnumerable<Post> posts = Array.Empty<Post>();
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstrender)
     {
-        PageNumber = 1;
-        PageSize=3;
-        PageParameters pg = new BlazorBlog.Data.Model.PageParameters() {PageNumber = PageNumber, PageSize = PageSize};
-        posts = await apiService.GetPosts(pg);
+        if(firstrender)
+        {
+            PageNumber = 1;
+            PageSize=3;
+            PageParameters pg = new BlazorBlog.Data.Model.PageParameters() {PageNumber = PageNumber, PageSize = PageSize};
+            posts = await apiService.GetPosts(pg);
+            StateHasChanged();
+        }
     }
     private async void OldPosts()
     {

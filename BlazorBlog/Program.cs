@@ -13,6 +13,8 @@ builder.Services.AddScoped<IApiService, ApiService>();
 builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
 builder.Services.AddScoped<IHttpService, HttpService>();
 builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+builder.Services.AddScoped<IMessageService, MessageService>();
+
 
 
 var app = builder.Build();
@@ -33,5 +35,6 @@ app.UseRouting();
 
 app.MapBlazorHub();
 app.MapFallbackToPage("/_Host");
+
 
 app.Run();

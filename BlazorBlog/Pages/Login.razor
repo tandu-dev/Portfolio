@@ -7,6 +7,7 @@
 @inject IAuthenticationService authenticationService
 @inject ILocalStorageService localStorageService
 @inject NavigationManager NavigationManager
+@inject IMessageService MessageService
 
 
 <EditForm Model="@model">
@@ -33,6 +34,7 @@
     private async void Login_Api()
     {
         await authenticationService.Login(model);
+        MessageService.SendMessage("render");
         NavigationManager.NavigateTo("/");        
     }
 

@@ -10,7 +10,7 @@
             public string? CategoryName {get; set;}
         }
         public class Category {
-            public int categoryId {get; set;}
+            public int CategoryId {get; set;}
 
             public string? CategoryName {get;set;}
         }

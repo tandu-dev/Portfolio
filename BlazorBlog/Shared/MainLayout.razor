@@ -1,6 +1,8 @@
-﻿@using BlazorBlog.Shared
-
+﻿@using BlazorBlog.Data.Model;
 @inherits LayoutComponentBase
+@using BlazorBlog.Data.Services
+
+@inject IAuthenticationService authenticationService
 
 <PageTitle>BlazorBlog</PageTitle>
 
@@ -11,7 +13,7 @@
 
     <main>
         <div class="top-row px-4">
-            <Credential />
+            <Credential CredObj=@blogCredential/>
         </div>
 
         <article class="content px-4">
@@ -19,3 +21,17 @@
         </article>
     </main>
 </div>
+
+@code {
+    public BlogCredential? blogCredential {get; set;}
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if(!firstRender)
+        {
+            blogCredential = authenticationService.blogCredential;
+            StateHasChanged();
+        }
+    }
+
+}
