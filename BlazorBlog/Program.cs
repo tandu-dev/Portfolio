@@ -10,6 +10,10 @@ builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IApiService, ApiService>();
+builder.Services.AddScoped<ILocalStorageService, LocalStorageService>();
+builder.Services.AddScoped<IHttpService, HttpService>();
+builder.Services.AddScoped<IAuthenticationService, AuthenticationService>();
+
 
 var app = builder.Build();
 

@@ -1,8 +1,13 @@
 @page "/login"
 
 @using BlazorBlog.Data.Model
+@using BlazorBlog.Data.Services
 
-@inject BlazorBlog.Data.Services.IApiService apiService
+@inject IApiService apiService
+@inject IAuthenticationService authenticationService
+@inject ILocalStorageService localStorageService
+@inject NavigationManager NavigationManager
+
 
 <EditForm Model="@model">
     <div class="row">
@@ -27,7 +32,8 @@
 
     private async void Login_Api()
     {
-        token = await apiService.Login(model);
-        StateHasChanged();
+        await authenticationService.Login(model);
+        NavigationManager.NavigateTo("/");        
     }
+
 }
