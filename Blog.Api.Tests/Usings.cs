@@ -8,3 +8,4 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 global using System.Text.Json;
 global using System.Net;
+global using BlogWebAPIwithJWT.Data;

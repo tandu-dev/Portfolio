@@ -1,12 +1,10 @@
-using BlogWithJWT;
-using System.Net.Http;
 using System.Net.Http.Json;
 
 namespace Blog.Api.Tests;
 
 public class Tests
 {
-    private BlogApiApplication _application;
+    private BlogApiApplication? _application;
     private string jwtToken;
 
     [SetUp]
@@ -41,7 +39,7 @@ public class Tests
                                     await client.PostAsJsonAsync("/login", user)
                                     .Result.Content
                                     .ReadAsStringAsync());
-            var jwtToken = task.
+            //var jwtToken = task.
         }
 
     }
