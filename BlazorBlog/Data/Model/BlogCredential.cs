@@ -8,6 +8,8 @@ namespace BlazorBlog.Data.Model
 
         [Required]
         public string Password {get; set;}
+
+        public TokenWrapper tokenWrapper {get; set;}
     }
     public class TokenWrapper {
            public string token { get; set; }
