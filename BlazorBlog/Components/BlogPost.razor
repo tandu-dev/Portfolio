@@ -1,5 +1,6 @@
 @using BlazorBlog.Data.Model;
 
+@inject IAuthenticationService AuthenticationService
     
     @if(thumbnail)
     {
@@ -11,12 +12,16 @@
     }
     else{
         @if (@post is not null) {
+            @if(AuthenticationService.blogCredential != null){
+                <button><span class="oi oi-delete"></span>Delete</button>
+                <button><span class="oi oi-pencil"></span>Edit</button>
+            }
             <h1>@post.Title</h1>
             <p>@post.Contents</p>
             <p>@post.Timestamp</p>
             <p>@post.CategoryName</p>
             <hr/>
-            <a href="/1/3">Back to List</a>
+            <a href="/">Back to List</a>
         }
     }
     @code{

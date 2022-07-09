@@ -41,7 +41,10 @@ namespace BlazorBlog.Data.Services
         public async Task<T> Post<T>(string uri, object value)
         {
             var request = new HttpRequestMessage(HttpMethod.Post, uri);
-            request.Content = new StringContent(JsonSerializer.Serialize(value), Encoding.UTF8, "application/json");
+            JsonSerializerOptions options = new JsonSerializerOptions() {
+                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+            request.Content = new StringContent(JsonSerializer.Serialize(value, options), Encoding.UTF8, "application/json");
             return await sendRequest<T>(request);
         }
 
@@ -51,7 +54,7 @@ namespace BlazorBlog.Data.Services
         {
             // add jwt auth header if user is logged in and request is to the api url
             var credential = await _localStorageService.GetItem<BlogCredential>("credential");
-            var isApiUrl = !request.RequestUri.IsAbsoluteUri;
+            var isApiUrl = request.RequestUri.IsAbsoluteUri;
             if (credential != null && isApiUrl)
                 request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", credential.tokenWrapper.token);
 
@@ -70,8 +73,11 @@ namespace BlazorBlog.Data.Services
                 var error = await response.Content.ReadFromJsonAsync<Dictionary<string, string>>();
                 throw new Exception(error["message"]);
             }
-
-            return await response.Content.ReadFromJsonAsync<T>();
+            JsonSerializerOptions options = new JsonSerializerOptions() {
+                            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                        };
+            var result = response.Content.ReadAsStringAsync();
+            return await response.Content.ReadFromJsonAsync<T>(options);
         }
     }
 }

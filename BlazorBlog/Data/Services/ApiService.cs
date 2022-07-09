@@ -8,7 +8,8 @@ namespace BlazorBlog.Data.Services {
         Task<IEnumerable<Post>> GetPosts(PageParameters pg);
 
         Task<Post> GetPostAsync(string Id);
-
+        Task<IEnumerable<Category>> GetCategoriesAsync();
+        Task<Post> AddPost(Post model);
     }
     public class ApiService : IApiService
     {
@@ -26,20 +27,6 @@ namespace BlazorBlog.Data.Services {
             var url = $"{Config["GetPostAddress"]}/{Id}";            
             var response = await HttpService.Get<Post>(url);
             return response;
-            // if(response.IsSuccessStatusCode)
-            // {
-            //     using var responseStream =  await response.Content.ReadAsStreamAsync();
-            //     var jsonOptions = new JsonSerializerOptions() {
-            //         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            //     };
-            //     var postResults = await JsonSerializer.DeserializeAsync<Post>(
-            //        responseStream, jsonOptions
-            //     );
-            //     return postResults;
-            // }
-            // else{
-            //     throw new Exception(response.StatusCode.ToString());
-            // }
         }
 
         public async Task<IEnumerable<Post>> GetPosts(PageParameters pg)
@@ -48,24 +35,21 @@ namespace BlazorBlog.Data.Services {
            
             var url = $"{Config["GetPostAddress"]}/{pg.PageNumber}/{pg.PageSize}";
             var response = await HttpService.Get<IEnumerable<Post>>(url);
-            return response;
-            // if(response.IsSuccessStatusCode)
-            // {
-            //     using var responseStream =  await response.Content.ReadAsStreamAsync();
-            //     var jsonOptions = new JsonSerializerOptions() {
-            //         PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-            //     };
-            //     var postResults = await JsonSerializer.DeserializeAsync<IEnumerable<Post>>(
-            //        responseStream, jsonOptions
-            //     );
-            //     return postResults;
-            // }
-            // else{
-            //     throw new Exception(response.StatusCode.ToString());
-            // }
-            
+            return response;            
         }
-
+        public async Task<IEnumerable<Category>> GetCategoriesAsync()
+        {
+            IEnumerable<Category> posts = Array.Empty<Category>();
+            var url = $"{Config["BaseAddress"]}/categories";
+            var response = await HttpService.Get<IEnumerable<Category>>(url);
+            return response;
+        }
+        public async Task<Post> AddPost(Post model)
+        {
+            var url  = $"{Config["GetPostAddress"]}";
+            var response = await HttpService.Post<Post>(url, model);
+            return model;
+        }
         
     }
 }
