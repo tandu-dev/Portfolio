@@ -13,8 +13,11 @@
 
     public Post? post {get; set;}
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        post = await apiService.GetPostAsync(Id);
+        if(firstRender){
+            post = await apiService.GetPostAsync(Id);
+            StateHasChanged();
+        }
     }
 }

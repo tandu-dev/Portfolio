@@ -117,16 +117,17 @@ app.MapGet("/posts/{id}", async (int id,  IPostService ps) =>
                 ? Results.Ok(post)
                 : Results.NotFound("record")).WithTags("Blog");
 
-app.MapPost("/posts", [Authorize] async (Post post, BlogDb db) =>
+app.MapPost("/posts", [Authorize] async (EditPost post, IPostService ps, BlogDb db) =>
 {
     if(post.CategoryId == 0 || post.CategoryId > 3 ||
     String.IsNullOrWhiteSpace(post.Title) ||
     String.IsNullOrWhiteSpace(post.Contents))
         return Results.BadRequest("Posts require Title, Contents, and Category.");
-    db.Posts.Add(post);
+    var basePost = (Post) post;
+    db.Posts.Add(basePost);
     await db.SaveChangesAsync();
-
-    return Results.Created($"/posts/{post.Id}", post);
+    EditPost AddedPost = await ps.GetPostAsync(post.Id);
+    return Results.Created($"/posts/{post.Id}", AddedPost);
 }).WithTags("Blog").RequireAuthorization();
 
 app.MapPut("/posts/{id}", [Authorize] async (int id, Post inputPost, BlogDb db) =>

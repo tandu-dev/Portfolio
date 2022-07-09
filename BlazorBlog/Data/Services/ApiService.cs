@@ -1,8 +1,9 @@
 using BlazorBlog.Data.Model;
 using System.Text.Json;
 
-namespace BlazorBlog.Data.Services {
-    
+namespace BlazorBlog.Data.Services
+{
+
     public interface IApiService
     {
         Task<IEnumerable<Post>> GetPosts(PageParameters pg);
@@ -10,6 +11,8 @@ namespace BlazorBlog.Data.Services {
         Task<Post> GetPostAsync(string Id);
         Task<IEnumerable<Category>> GetCategoriesAsync();
         Task<Post> AddPost(Post model);
+        Task DeletePostAsync(string Id);
+        Task<Post> UpdatePost(Post model);
     }
     public class ApiService : IApiService
     {
@@ -23,8 +26,8 @@ namespace BlazorBlog.Data.Services {
         public IConfiguration Config { get; }
 
         public async Task<Post> GetPostAsync(string Id)
-        {            
-            var url = $"{Config["GetPostAddress"]}/{Id}";            
+        {
+            var url = $"{Config["GetPostAddress"]}/{Id}";
             var response = await HttpService.Get<Post>(url);
             return response;
         }
@@ -32,10 +35,10 @@ namespace BlazorBlog.Data.Services {
         public async Task<IEnumerable<Post>> GetPosts(PageParameters pg)
         {
             IEnumerable<Post> posts = Array.Empty<Post>();
-           
+
             var url = $"{Config["GetPostAddress"]}/{pg.PageNumber}/{pg.PageSize}";
             var response = await HttpService.Get<IEnumerable<Post>>(url);
-            return response;            
+            return response;
         }
         public async Task<IEnumerable<Category>> GetCategoriesAsync()
         {
@@ -46,10 +49,22 @@ namespace BlazorBlog.Data.Services {
         }
         public async Task<Post> AddPost(Post model)
         {
-            var url  = $"{Config["GetPostAddress"]}";
+            var url = $"{Config["GetPostAddress"]}";
             var response = await HttpService.Post<Post>(url, model);
             return model;
         }
-        
+
+        public async Task DeletePostAsync(string Id)
+        {
+            var url = $"{Config["GetPostAddress"]}/{Id}";
+            var response = await HttpService.Delete<Post>(url);
+        }
+
+        public async Task<Post> UpdatePost(Post model)
+        {
+            var url = $"{Config["GetPostAddress"]}/{model.Id}";
+            var response = await HttpService.Put<Post>(url, model);
+            return response;
+        }
     }
 }

@@ -11,6 +11,8 @@ namespace BlazorBlog.Data.Services
     {
         Task<T> Get<T>(string uri);
         Task<T> Post<T>(string uri, object value);
+        Task<T> Delete<T>(string uri);
+        Task<T> Put<T>(string uri, object value);
     }
 
     public class HttpService : IHttpService
@@ -47,7 +49,11 @@ namespace BlazorBlog.Data.Services
             request.Content = new StringContent(JsonSerializer.Serialize(value, options), Encoding.UTF8, "application/json");
             return await sendRequest<T>(request);
         }
-
+        public async Task<T> Delete<T> (string uri)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Delete, uri);
+            return await sendRequest<T>(request);
+        }
         // helper methods
 
         private async Task<T> sendRequest<T>(HttpRequestMessage request)
@@ -61,10 +67,15 @@ namespace BlazorBlog.Data.Services
             using var response = await _httpClient.SendAsync(request);
 
             // auto logout on 401 response
-            if (response.StatusCode == HttpStatusCode.Unauthorized)
+            switch (response.StatusCode)
             {
-                _navigationManager.NavigateTo("logout");
-                return default;
+                case HttpStatusCode.Unauthorized:
+                    _navigationManager.NavigateTo("logout");
+                    return default;
+                
+                case HttpStatusCode.BadRequest:
+                    _navigationManager.NavigateTo("/addpost");
+                    return default;                
             }
 
             // throw exception on error response
@@ -76,8 +87,17 @@ namespace BlazorBlog.Data.Services
             JsonSerializerOptions options = new JsonSerializerOptions() {
                             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
                         };
-            var result = response.Content.ReadAsStringAsync();
             return await response.Content.ReadFromJsonAsync<T>(options);
+        }
+
+        public async Task<T> Put<T>(string uri, object value)
+        {
+            var request = new HttpRequestMessage(HttpMethod.Put, uri);
+            JsonSerializerOptions options = new JsonSerializerOptions() {
+                 PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+            };
+            request.Content = new StringContent(JsonSerializer.Serialize(value, options), Encoding.UTF8, "application/json");
+            return await sendRequest<T>(request);
         }
     }
 }

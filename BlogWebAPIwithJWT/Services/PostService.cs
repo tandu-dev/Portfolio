@@ -11,17 +11,17 @@ namespace BlogWebAPIwithJWT.Services {
 
         public BlogDb db { get; }
 
-        public async Task<Post> GetPostAsync(int id)
+        public async Task<EditPost> GetPostAsync(int id)
         {
             return await db.Posts
                 .Join(db.Categories, p => p.CategoryId, c=>c.categoryId, (p, c) => new {p, c})
-                .Select(s => new Post() {Id = s.p.Id, Title = s.p.Title, 
+                .Select(s => new EditPost() {Id = s.p.Id, Title = s.p.Title, 
                                         CategoryId = s.p.CategoryId, CategoryName = s.c.CategoryName,
                                         Contents = s.p.Contents, Timestamp = s.p.Timestamp})
                 .FirstOrDefaultAsync(s => s.Id == id);                                   
         }
 
-        public async Task<List<Post>> GetPostsAsync(PageParameters pg)
+        public async Task<List<EditPost>> GetPostsAsync(PageParameters pg)
         {
             var postCount = db.Posts.Count();
             var numberOfPages = (double)postCount/pg.PageSize;
@@ -36,17 +36,17 @@ namespace BlogWebAPIwithJWT.Services {
             .OrderByDescending(s => s.p.Id)
             .Skip((pg.PageNumber -1)*pg.PageSize)
             .Take(pg.PageSize)
-            .Select(s => new Post() {Id = s.p.Id, Title = s.p.Title, 
+            .Select(s => new EditPost() {Id = s.p.Id, Title = s.p.Title, 
                                         CategoryId = s.p.CategoryId, CategoryName = s.c.CategoryName,
                                         Contents = s.p.Contents, Timestamp = s.p.Timestamp})
             .ToListAsync();
         }
 
-        public async Task<List<Post>> GetPostsAsync()
+        public async Task<List<EditPost>> GetPostsAsync()
         {
             return await db.Posts
             .Join(db.Categories, p => p.CategoryId, c=>c.categoryId, (p, c) => new {p, c})
-            .Select(s => new Post() {Id = s.p.Id, Title = s.p.Title, 
+            .Select(s => new EditPost() {Id = s.p.Id, Title = s.p.Title, 
                                         CategoryId = s.p.CategoryId, CategoryName = s.c.CategoryName,
                                         Contents = s.p.Contents, Timestamp = s.p.Timestamp})
             .ToListAsync();

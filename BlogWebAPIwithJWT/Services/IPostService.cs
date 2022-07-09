@@ -1,8 +1,8 @@
 using BlogWebAPIwithJWT.Data;
 public interface IPostService {
-    public Task<List<Post>> GetPostsAsync(PageParameters pg);
+    public Task<List<EditPost>> GetPostsAsync(PageParameters pg);
 
-    public Task<List<Post>> GetPostsAsync();
+    public Task<List<EditPost>> GetPostsAsync();
 
-    public Task<Post> GetPostAsync(int id);
+    public Task<EditPost> GetPostAsync(int id);
 }
