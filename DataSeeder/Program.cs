@@ -43,7 +43,7 @@ namespace DataSeeder {
             //login
             string login = "{\"userName\":\"admin\", \"password\":\"abc123\"}";
             HttpContent loginHC = new StringContent(login, System.Text.Encoding.UTF8, "application/json");
-            var tokenResponse = await client.PostAsync("http://localhost:5142/login", loginHC);
+            var tokenResponse = await client.PostAsync("http://localhost:5000/login", loginHC);
             var token = await JsonSerializer.DeserializeAsync<MyJWTToken>(
                 await tokenResponse.Content.ReadAsStreamAsync());
             client.DefaultRequestHeaders.Add("Authorization", $"Bearer {token.token}");
@@ -51,7 +51,7 @@ namespace DataSeeder {
             {
                 string payload = JsonSerializer.Serialize<Post>(post);
                 HttpContent hc = new StringContent(payload, System.Text.Encoding.UTF8, "application/json");
-                response = await client.PostAsync("http://localhost:5142/posts", hc);
+                response = await client.PostAsync("http://localhost:5000/posts", hc);
                 if (response.IsSuccessStatusCode)
                 {
                     Console.WriteLine($"Posted {post.Title}, Id: {post.Id}");
